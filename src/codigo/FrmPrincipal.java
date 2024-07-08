@@ -108,22 +108,25 @@ public class FrmPrincipal extends javax.swing.JFrame {
         chooser.showOpenDialog(null);
         
         String line;
-        /*
+        Integer contador1 = 0;
         try {
             BufferedReader br = new BufferedReader(new FileReader(chooser.getSelectedFile())); 
-            line = br.readLine();
-            while (line != null) {
-                System.out.println(line);
+            
+            while ((line = br.readLine()) != null) {
+                contador1++;
+                txtResultado.append(String.format("%5d %s%n" , contador1 , line));
+                System.out.printf("%5d %s%n" , contador1 , line);
             }
+            
         }catch(IOException ex){
             ex.printStackTrace();
         }
-        */
+        
         
 
         
+        /*
         
-   
         try {
             Reader lector = new BufferedReader(new FileReader(chooser.getSelectedFile()));
             Lexer lexer = new Lexer(lector);
@@ -166,11 +169,11 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     case SEMI:
                     case Numero:
                     case LT:
-                       resultado += lexer.lexeme + tokens + "\n";
+                       resultado +=  tokens + "\n";
                        txtResultado.setText(String.format("%5d %s%n", contador, resultado));
                         break;    
                     default :
-                        resultado += "Token"+ tokens + "\n";
+                        resultado += tokens + "\n";
                         txtResultado.setText(String.format("%5d %s%n", contador , resultado));
                         
                         break;
@@ -188,7 +191,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         }
         
         
-        
+        */
         
         
         
