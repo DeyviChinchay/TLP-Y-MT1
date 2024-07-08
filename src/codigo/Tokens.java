@@ -22,6 +22,7 @@ public enum Tokens {
     OVER,
     LPAREN,
     RPAREN,
+    LINE,
     COMM,
     SEMI,
     WHITESPACE,

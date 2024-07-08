@@ -9,13 +9,15 @@ digit		= [0-9]
 number		= {digit}+
 letter		= [a-zA-Z]
 Identificador	= {letter}+
-newline		= \n
-whitespace	= [ \t]+
+whitespace	= [ \r,\n,\t]+
+line            = .*\n
 
 
 %{
     public String lexeme;
+    public int lineno = 1;
 %}
+
 %%
 
 then {lexeme=yytext(); return THEN;}
@@ -38,7 +40,7 @@ write {lexeme=yytext(); return WRITE;}
 "{" {lexeme=yytext(); return COMM;}
 ";" {lexeme=yytext(); return SEMI;}
 "EOF" {lexeme=yytext(); return EOF;}
-{whitespace} {lexeme=yytext(); return WHITESPACE;}
+{whitespace} {lexeme=yytext(); return WHITESPACE;} 
 {letter}({letter}|{digit})* {lexeme=yytext(); return Identificador;}
 ("(-"{digit}+")")|{digit}+ {lexeme=yytext(); return Numero;}
- . {return ERROR;}
+. {return ERROR;}

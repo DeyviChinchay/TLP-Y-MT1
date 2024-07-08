@@ -107,28 +107,49 @@ public class FrmPrincipal extends javax.swing.JFrame {
         JFileChooser chooser = new JFileChooser();
         chooser.showOpenDialog(null);
         
-        //String archivoSalida = args[1];
+        String line;
+        /*
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(chooser.getSelectedFile())); 
+            line = br.readLine();
+            while (line != null) {
+                System.out.println(line);
+            }
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+        */
+        
+
+        
+        
+   
         try {
             Reader lector = new BufferedReader(new FileReader(chooser.getSelectedFile()));
             Lexer lexer = new Lexer(lector);
             String resultado = "";
+            String strLine = "";
+            int contador = 0;
             while(true){
                 Tokens tokens = lexer.yylex();
+                contador++;
                 if(tokens == null || tokens == EOF){
                     resultado += "FIN";
                     txtResultado.setText(resultado);
-                    Exportar(resultado);
+                    //Exportar(resultado);
                     return;
                 }
                 switch(tokens){
                     case ERROR:
                        resultado += "Simbolo no definido\n";
+                       txtResultado.setText(String.format("%5d %s%n" , contador,resultado));
                        break;
                     case THEN:   
                     case Identificador : 
                     case IF: 
                     case ELSE: 
                     case REPEAT:
+                    case READ:
                     case WHITESPACE:
                     case EQ: 
                     case PLUS: 
@@ -145,15 +166,15 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     case SEMI:
                     case Numero:
                     case LT:
-                       resultado += lexer.lexeme + " : Es un" + tokens + "\n";
-                       break;
-                    case EOF:
-                        resultado += lexer.lexeme +" : es un " + tokens + "\n";
-                        break;   
+                       resultado += lexer.lexeme + tokens + "\n";
+                       txtResultado.setText(String.format("%5d %s%n", contador, resultado));
+                        break;    
                     default :
-                        resultado += "Token" + tokens + "\n";
+                        resultado += "Token"+ tokens + "\n";
+                        txtResultado.setText(String.format("%5d %s%n", contador , resultado));
+                        
                         break;
-                               
+                     
                 }
                 
                 
