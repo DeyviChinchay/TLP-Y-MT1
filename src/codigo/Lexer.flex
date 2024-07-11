@@ -11,7 +11,7 @@ letter		= [a-zA-Z]
 Identificador	= {letter}+
 whitespace	= [ \r,\n,\t]+
 line            = .*\n
-
+comment         = "{" [^}]* "}"
 
 %{
     public String lexeme;
@@ -37,10 +37,12 @@ write {lexeme=yytext(); return WRITE;}
 "/" {lexeme=yytext(); return OVER;}
 "(" {lexeme=yytext(); return LPAREN;}
 ")" {lexeme=yytext(); return RPAREN;}
-"{" {lexeme=yytext(); return COMM;}
 ";" {lexeme=yytext(); return SEMI;}
+"end" { lexeme=yytext(); return END;}
 "EOF" {lexeme=yytext(); return EOF;}
-{whitespace} {lexeme=yytext(); return WHITESPACE;} 
+{comment} {/* Ignora el comentario */}
+"{" [^}]* "}" {/* Ignora el comentario */}
+{whitespace} {lexeme=yytext(); return WHITESPACE;}
 {letter}({letter}|{digit})* {lexeme=yytext(); return Identificador;}
 ("(-"{digit}+")")|{digit}+ {lexeme=yytext(); return Numero;}
 . {return ERROR;}

@@ -4,8 +4,31 @@
  */
 package codigo;
 
+import static codigo.Tokens.ASSIGN;
+import static codigo.Tokens.ELSE;
+import static codigo.Tokens.END;
 import static codigo.Tokens.EOF;
+import static codigo.Tokens.EQ;
+import static codigo.Tokens.ERROR;
+import static codigo.Tokens.IF;
+import static codigo.Tokens.Identificador;
+import static codigo.Tokens.LPAREN;
+import static codigo.Tokens.LT;
+import static codigo.Tokens.MINUS;
+import static codigo.Tokens.Numero;
+import static codigo.Tokens.OVER;
+import static codigo.Tokens.PLUS;
+import static codigo.Tokens.READ;
+import static codigo.Tokens.REPEAT;
+import static codigo.Tokens.RPAREN;
+import static codigo.Tokens.SEMI;
+import static codigo.Tokens.THEN;
+import static codigo.Tokens.TIMES;
+import static codigo.Tokens.UNTIL;
+import static codigo.Tokens.WHITESPACE;
+import static codigo.Tokens.WRITE;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,6 +36,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -23,9 +47,9 @@ import javax.swing.JOptionPane;
  * @author Deyvi
  */
 public class FrmPrincipal extends javax.swing.JFrame {
-
-    public  void Exportar(String resultado) {
-        try {
+    
+    public  void Exportar(StringBuilder resultado) {
+        /*try {
             JFileChooser archivo = new JFileChooser(System.getProperty("user.dir"));
             archivo.showSaveDialog(this);
 
@@ -37,11 +61,25 @@ public class FrmPrincipal extends javax.swing.JFrame {
             }
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
+        }*/
+        
+        JFileChooser archivo = new JFileChooser(System.getProperty("user.dir"));
+        archivo.setDialogTitle("Guardar archivo");
+        int userSelection = archivo.showSaveDialog(this);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = archivo.getSelectedFile();
+            try (FileWriter guardado = new FileWriter(fileToSave)) {
+                guardado.write(resultado.toString());
+                JOptionPane.showMessageDialog(this, "El archivo fue guardado con éxito en la ruta establecida");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage());
+            }
         }
     }
    
     
-        
+              
     public FrmPrincipal() {
         initComponents();
         this.setLocationRelativeTo(null);
@@ -107,6 +145,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         JFileChooser chooser = new JFileChooser();
         chooser.showOpenDialog(null);
         
+        /*
         String line;
         Integer contador1 = 0;
         try {
@@ -114,7 +153,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
             
             while ((line = br.readLine()) != null) {
                 contador1++;
-                txtResultado.append(String.format("%5d %s%n" , contador1 , line));
+                //txtResultado.append(String.format("%5d %s%n" , contador1 , line));
                 System.out.printf("%5d %s%n" , contador1 , line);
             }
             
@@ -122,30 +161,41 @@ public class FrmPrincipal extends javax.swing.JFrame {
             ex.printStackTrace();
         }
         
-        
+        */
 
         
-        /*
-        
+        StringBuilder resultado = new StringBuilder();
+        String line1;
+        int contador = 0;
         try {
-            Reader lector = new BufferedReader(new FileReader(chooser.getSelectedFile()));
-            Lexer lexer = new Lexer(lector);
-            String resultado = "";
-            String strLine = "";
-            int contador = 0;
-            while(true){
-                Tokens tokens = lexer.yylex();
-                contador++;
-                if(tokens == null || tokens == EOF){
-                    resultado += "FIN";
-                    txtResultado.setText(resultado);
-                    //Exportar(resultado);
-                    return;
-                }
-                switch(tokens){
+            /*FileReader fr =  new FileReader(chooser.getSelectedFile());
+            BufferedReader lector = new BufferedReader(fr);*/
+            
+            BufferedReader lector = new BufferedReader(new FileReader(chooser.getSelectedFile()));
+     
+           
+            while((line1 = lector.readLine())!= null){
+                
+                
+                Lexer lexer = new Lexer(new StringReader(line1));
+                Tokens tokens;
+                
+                
+                
+                while((tokens = lexer.yylex()) != null){
+                    contador++;
+                    if(tokens == null || tokens == tokens.EOF){
+                        resultado.append("FIN");
+                        txtResultado.append(String.format("%5d %s%n" , contador , resultado.toString()));
+                        
+                        return;
+                    }
+                    
+                   
+                    switch(tokens){
                     case ERROR:
-                       resultado += "Simbolo no definido\n";
-                       txtResultado.setText(String.format("%5d %s%n" , contador,resultado));
+                       //resultado.append("Simbolo no definido");
+                       resultado.append(String.format("%5d %s%n", contador, "Simbolo no definido")).append("\n");
                        break;
                     case THEN:   
                     case Identificador : 
@@ -165,25 +215,28 @@ public class FrmPrincipal extends javax.swing.JFrame {
                     case OVER:
                     case LPAREN:
                     case RPAREN:
-                    case COMM:
                     case SEMI:
                     case Numero:
                     case LT:
-                       resultado +=  tokens + "\n";
-                       txtResultado.setText(String.format("%5d %s%n", contador, resultado));
-                        break;    
-                    default :
-                        resultado += tokens + "\n";
-                        txtResultado.setText(String.format("%5d %s%n", contador , resultado));
-                        
+                       //resultado.append(tokens).append("\n");
+                       txtResultado.append(String.format("%5d %s%n", contador, tokens.toString()));
+                       resultado.append(String.format("%5d %s%n", contador, tokens.toString())).append("\n");
+                       break;    
+                    default :       
+                        //resultado.append(tokens).append("\n");
+                        txtResultado.append(String.format("%5d %s%n", contador , tokens.toString()));
+                        resultado.append(String.format("%5d %s%n", contador, tokens.toString())).append("\n");
                         break;
-                     
+                  
+                    }
+                   
+                    
                 }
                 
-                
-            }
+                               
+                }
             
-         
+              Exportar(resultado);
         }catch(FileNotFoundException ex){
             System.out.println("El archivo no se encuentra");
         }catch(IOException ex){
@@ -191,7 +244,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         }
         
         
-        */
+        
         
         
         
